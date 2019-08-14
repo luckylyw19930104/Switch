@@ -3,6 +3,8 @@ package com.example.demo.service;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
@@ -21,6 +23,13 @@ import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.Address;
 import com.amazonaws.services.ec2.model.DescribeAddressesRequest;
 import com.amazonaws.services.ec2.model.DescribeAddressesResult;
+import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.Reservation;
+
 
 @Service
 public class AWSControllerService {
@@ -54,7 +63,10 @@ public class AWSControllerService {
 	}
 	
 	public void stopEC2(String instance_id) {
-		final AmazonEC2 ec2 = AmazonEC2ClientBuilder.standard().withRegion("ap-southeast-1").build();
+		
+		BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAZDDLBNUNGHZCBRPI", "2U51EkO5vVWaImH8RAVpJwokbtcUz/1sVvCNr92U");
+		
+		final AmazonEC2 ec2 = AmazonEC2ClientBuilder.standard().withRegion("ap-southeast-1").withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
 
         DryRunSupportedRequest<StopInstancesRequest> dry_request =
             () -> {
@@ -82,15 +94,34 @@ public class AWSControllerService {
 	
 	public void get() {
 		
-		AmazonEC2 client = AmazonEC2ClientBuilder.standard().build();
-		DescribeAddressesRequest request = new DescribeAddressesRequest().withFilters(new Filter().withName("private-ip-address").withValues("172.31.22.1"));
-		DescribeAddressesResult response = client.describeAddresses(request);
-	
-		for(Address address : response.getAddresses()) {
-		    System.out.printf(
-		            "Found address with private IP %s" ,
-		            
-		            address.getInstanceId());
+		final AmazonEC2 ec2 = AmazonEC2ClientBuilder.defaultClient();
+		boolean done = false;
+
+		DescribeInstancesRequest request = new DescribeInstancesRequest();
+		while(!done) {
+		    DescribeInstancesResult response = ec2.describeInstances(request);
+
+		    for(Reservation reservation : response.getReservations()) {
+		        for(Instance instance : reservation.getInstances()) {
+		            System.out.printf(
+		                "Found instance with id %s, " +
+		                "AMI %s, " +
+		                "type %s, " +
+		                "state %s " +
+		                "and monitoring state %s",
+		                instance.getInstanceId(),
+		                instance.getImageId(),
+		                instance.getInstanceType(),
+		                instance.getState().getName(),
+		                instance.getMonitoring().getState());
+		        }
+		    }
+
+		    request.setNextToken(response.getNextToken());
+
+		    if(response.getNextToken() == null) {
+		        done = true;
+		    }
 		}
 	}
 }
