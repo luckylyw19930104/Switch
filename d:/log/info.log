@@ -1,0 +1,16 @@
+2019/09/20-10:01 [main] DEBUG org.springframework.web.context.ContextLoader- Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2019/09/20-10:01 [main] INFO  org.springframework.web.context.ContextLoader- Root WebApplicationContext: initialization completed in 1529 ms
+2019/09/20-10:01 [main] DEBUG org.springframework.web.servlet.handler.SimpleUrlHandlerMapping- Patterns [/**/favicon.ico] in 'faviconHandlerMapping'
+2019/09/20-10:01 [main] DEBUG org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter- ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2019/09/20-10:01 [main] DEBUG org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping- 4 mappings in 'requestMappingHandlerMapping'
+2019/09/20-10:01 [main] DEBUG org.springframework.web.servlet.handler.SimpleUrlHandlerMapping- Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2019/09/20-10:01 [main] DEBUG org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver- ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2019/09/20-10:01 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet- Initializing Servlet 'dispatcherServlet'
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.DispatcherServlet- Detected StandardServletMultipartResolver
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.DispatcherServlet- enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2019/09/20-10:01 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet- Completed initialization in 13 ms
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.DispatcherServlet- POST "/EC2/stop?ip=172.31.17.96", parameters={masked}
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping- Mapped to public com.example.demo.pojo.AWSControllerResponse com.example.demo.web.AWSControllerWeb.stopEC2(java.lang.String)
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor- Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/json, application/*+json]
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor- Writing [com.example.demo.pojo.AWSControllerResponse@1135a730]
+2019/09/20-10:01 [http-nio-8080-exec-1] DEBUG org.springframework.web.servlet.DispatcherServlet- Completed 200 OK

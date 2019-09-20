@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.logging.Log;
 import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.demo.pojo.AWSControllerResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -25,14 +27,16 @@ import software.amazon.awssdk.services.ec2.model.StartInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.StopInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.StopInstancesResponse;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 
-
+@Slf4j
 @Service
 public class AWSControllerAsyncService {
 	
 	@Autowired
 	AWSControllerResponse acr;
+	
 	
 	/**
 	 * initial EC2 Async client for further operation
@@ -46,8 +50,11 @@ public class AWSControllerAsyncService {
 			      access_key_id,
 			      secret_access_key);
 		// set avaliable region for your AWS account
+		
 		Ec2AsyncClient client = Ec2AsyncClient.builder().region(Region.AP_SOUTHEAST_1)
-				.credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
+					.credentialsProvider(StaticCredentialsProvider.create(awsCreds)).build();
+		
+		log.info("Connection with access key id: {}, secret access key: {} in region: SOUTHEAST_1", access_key_id, secret_access_key);
 		
 		return client;
 	}
@@ -59,7 +66,7 @@ public class AWSControllerAsyncService {
 	 */
 	public void startAsync(Ec2AsyncClient client, String instanceID) {
 		//Ec2AsyncClient client = initAsync();
-		
+		log.info("Start EC2 with instance ID {}", instanceID);
 		StartInstancesRequest request = StartInstancesRequest.builder()
 			    .instanceIds(instanceID).build();
 		
@@ -76,6 +83,7 @@ public class AWSControllerAsyncService {
 				}
 			}finally {
 				client.close();
+				log.info("Specific EC2 has been started");
 			}
 		});
 		future.join();
@@ -88,7 +96,7 @@ public class AWSControllerAsyncService {
 	 */
 	public void stopAsync(Ec2AsyncClient client, String instanceID) {
 		//Ec2AsyncClient client = initAsync();
-		
+		log.info("Stop EC2 with instance ID {}", instanceID);
 		StopInstancesRequest request = StopInstancesRequest.builder()
 			    .instanceIds(instanceID).build();
 		
@@ -105,6 +113,7 @@ public class AWSControllerAsyncService {
 				}
 			}finally {
 				client.close();
+				log.info("Specific EC2 has been stopped");
 			}
 		});
 		future.join();
@@ -122,6 +131,7 @@ public class AWSControllerAsyncService {
 		
 		boolean done = false;
         //ArrayList instanceIDList = new ArrayList<String>();
+		log.info("Get instance ID with private address: {}", ip);
         Filter filter = Filter.builder().name("private-ip-address").values(ip).build();
         
         String nextToken = null;
@@ -133,6 +143,7 @@ public class AWSControllerAsyncService {
         	Instance instance = response.reservations().get(0).instances().get(0);
         
         	final String state = instance.state().nameAsString();
+        	log.info("Current state of specific EC2 is {}", state);
 //        System.out.println(command);
 //        System.out.println(state);
         	
@@ -146,6 +157,7 @@ public class AWSControllerAsyncService {
         	
         	// return the instance ID for specific private IP
         	String instanceID = instance.instanceId();
+        	log.info("Instance ID of specific EC2 is {}", instanceID);
         //System.out.println(instanceID);
         	acr.setResult(instanceID);
         	acr.setMiddle(true);
@@ -158,6 +170,7 @@ public class AWSControllerAsyncService {
         		acr.setResult("Please check your input ip address!");
         		acr.setMiddle(false);
         		acr.setDone(false);
+        		log.error("Can not find EC2 with private IP address {}", ip);
         		return acr;
         }
 	}
